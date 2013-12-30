@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <title>BattleTech?ish?</title>
+        <link href="styles.css" type="text/css" rel="stylesheet"  />
+        <script type="text/javascript" src="js/map.js" ></script>
+        <script type="text/javascript">
+            var map = null;
+            function LoadMap() {
+                var canvas = document.getElementById("battle_map");
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                map = new Map(canvas);
+                map.Render();
+            }
+            
+            var mouse_down = false;
+            var mouse_down_x = 0;
+            var mouse_down_y = 0;
+            function canvasMouseDown(e) {
+                mouse_down = true;
+                mouse_down_x = e.x;
+                mouse_down_y = e.y;
+            }
+            
+            function canvasMouseUp() {
+                mouse_down = false;
+            }
+            function canvasMouseMove(e) {
+                if (mouse_down) {
+                    var x = e.x - mouse_down_x;
+                    var y = e.y - mouse_down_y;
+                    mouse_down_x = e.x;
+                    mouse_down_y = e.y;
+                    map.AdjustLocation(x,y);
+                }
+                map.Hover(e.x,e.y);
+            }
+            
+            function UpdateMap() {
+                var zoom = document.getElementById("zoom");
+                map.Zoom = zoom.value / 100;
+                map.Render();
+                document.getElementById("zoom_output").innerHTML = zoom.value + "%";
+            }
+            
+        </script>
+    </head>
+    
+    <body onload="LoadMap();">
+        <canvas id="battle_map" style="position:absolute;top:0;left:0;width:100%;height:100%;" 
+        onmousedown="canvasMouseDown(event);" onmouseup="canvasMouseUp();" onmousemove="canvasMouseMove(event);"></canvas>
+        <div style="position:absolute;left:0;top:0;">
+        <input type="range" oninput="UpdateMap();" max="200" min="50" value="100" step="1" id="zoom" style="width:400px;" />
+        <span id="zoom_output">100%</span>
+        </div>
+        <div id="debug"></div>
+    </body>
+</html>
